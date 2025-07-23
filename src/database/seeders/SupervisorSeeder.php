@@ -20,5 +20,12 @@ class SupervisorSeeder extends Seeder
             'user_id' => 5,
             'phone' => '0987654321',
         ]);
+
+        Supervisor::firstOrCreate([
+            'username' => 'DL',
+            'name' => 'Diana Lone',
+            'user_id' => 6,
+            'phone' => '0872544390',
+        ]);
     }
 }
