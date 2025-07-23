@@ -4,7 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupervisorResource\Pages;
 use App\Filament\Resources\SupervisorResource\RelationManagers;
+use App\Models\User;
 use App\Models\Supervisor;
+use App\Models\Driver;
+use App\Models\Trip;
+use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

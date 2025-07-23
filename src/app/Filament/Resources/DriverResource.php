@@ -4,7 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DriverResource\Pages;
 use App\Filament\Resources\DriverResource\RelationManagers;
+use App\Models\User;
 use App\Models\Driver;
+use App\Models\Trip;
+use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Panel;
