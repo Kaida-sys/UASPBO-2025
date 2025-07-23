@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\TripResource\Pages;
+namespace App\Filament\Resources\TripResource\Pages;
 
-use App\Filament\Admin\Resources\TripResource;
+use App\Filament\Resources\TripResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

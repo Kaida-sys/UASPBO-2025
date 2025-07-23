@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\VehicleResource\Pages;
+namespace App\Filament\Resources\VehicleResource\Pages;
 
-use App\Filament\Admin\Resources\VehicleResource;
+use App\Filament\Resources\VehicleResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

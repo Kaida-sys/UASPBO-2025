@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\DriverResource\Pages;
+namespace App\Filament\Resources\DriverResource\Pages;
 
-use App\Filament\Admin\Resources\DriverResource;
+use App\Filament\Resources\DriverResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

@@ -1,23 +1,63 @@
 <?php
 
-namespace App\Filament\Admin\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Admin\Resources\DriverResource\Pages;
-use App\Filament\Admin\Resources\DriverResource\RelationManagers;
+use App\Filament\Resources\DriverResource\Pages;
+use App\Filament\Resources\DriverResource\RelationManagers;
 use App\Models\Driver;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class DriverResource extends Resource
 {
     protected static ?string $model = Driver::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
+    }
+
+    public function canAccessPanel(): bool
+    {
+        return Auth::check() && Auth::user()->hasRole('driver');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return Auth::check() && Auth::user() && Auth::user()->hasRole('driver');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return Auth::check() && Auth::user() && Auth::user()->hasAnyRole('driver', 'supervisor');
+    }
+
+    /*
+    public static function canCreate(): bool
+    {
+        return Auth::check() && Auth::user() && Auth::user()->hasRole('driver');
+    }
+    */
+
+    public static function canEdit(Model $record): bool
+    {
+        return Auth::check() && Auth::user() && Auth::user()->hasRole('driver');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return Auth::check() && Auth::user() && Auth::user()->hasRole('driver');
+    }
 
     public static function form(Form $form): Form
     {
