@@ -20,10 +20,22 @@ class UserSeeder extends Seeder
         );
         $user->assignRole('super_admin');
 
-        $user = User::firstOrCreate(
-            ['email' => 'user@admin.com'],
-            ['name' => 'User Account', 'password' => Hash::make('password')]
+        $driver1 = User::firstOrCreate(
+            ['email' => 'driver1@admin.com'],
+            ['name' => 'Driver 1', 'password' => Hash::make('password')]
         );
-        $user->assignRole('user');
+        $driver1->assignRole('driver');
+
+        $driver2 = User::firstOrCreate(
+            ['email' => 'driver2@admin.com'],
+            ['name' => 'Driver 2', 'password' => Hash::make('password')]
+        );
+        $driver2->assignRole('driver');
+
+        $supervisor = User::firstOrCreate(
+            ['email' => 'supervisor@admin.com'],
+            ['name' => 'Supervisor', 'password' => Hash::make('password')]
+        );
+        $supervisor->assignRole('supervisor');
     }
 }
