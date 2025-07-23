@@ -45,6 +45,7 @@ class DriverPanelProvider extends PanelProvider
                 TripResource::class,
                 VehicleResource::class,
                  ])
+                 
             ->discoverWidgets(in: app_path('Filament/Driver/Widgets'), for: 'App\\Filament\\Driver\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
