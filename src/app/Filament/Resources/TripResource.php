@@ -3,11 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TripResource\Pages;
-use App\Filament\Resources\TripResource\RelationManagers;
-use App\Models\Driver;
-use App\Models\Supervisor;
-use App\Models\Vehicle;
 use App\Models\Trip;
+use App\Models\Driver;
+use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,9 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class TripResource extends Resource
 {
@@ -27,17 +23,22 @@ class TripResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', Auth::id());
+        if (Auth::check() && Auth::user()->hasRole('driver')) {
+            $driverId = Driver::where('user_id', Auth::id())->value('id');
+            return parent::getEloquentQuery()->where('driver_id', $driverId);
+        }
+
+        return parent::getEloquentQuery();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::check() && Auth::user()->hasRole('supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function canViewAny(): bool
     {
-        return Auth::check() && Auth::user()->hasAnyRole('driver', 'supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function canCreate(): bool
@@ -47,25 +48,29 @@ class TripResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return Auth::check() && Auth::user()->hasRole('supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function canDelete(Model $record): bool
     {
-        return Auth::check() && Auth::user()->hasRole('supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('driver_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('driver_id')
+                    ->label('Driver')
+                    ->relationship('driver', 'name')
+                    ->searchable()
+                    ->required(),
 
-                Forms\Components\TextInput::make('vehicle_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('vehicle_id')
+                    ->label('Vehicle')
+                    ->relationship('vehicle', 'plate_number')
+                    ->searchable()
+                    ->required(),
 
                 Forms\Components\TextInput::make('destination')
                     ->required()
@@ -75,12 +80,12 @@ class TripResource extends Resource
                     ->required(),
 
                 Forms\Components\TextInput::make('distance')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->required(),
 
                 Forms\Components\TextInput::make('cost')
-                    ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->required(),
             ]);
     }
 
@@ -90,13 +95,15 @@ class TripResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
 
-                Tables\Columns\TextColumn::make('driver_id')
-                    ->label('Driver ID')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('driver.name')
+                    ->label('Driver')
+                    ->sortable()
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('vehicle_id')
-                    ->label('Vehicle ID')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('vehicle.plate_number')
+                    ->label('Vehicle')
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('destination')
                     ->sortable()
@@ -117,9 +124,7 @@ class TripResource extends Resource
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -132,9 +137,7 @@ class TripResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

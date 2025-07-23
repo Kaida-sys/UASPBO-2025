@@ -3,12 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupervisorResource\Pages;
-use App\Filament\Resources\SupervisorResource\RelationManagers;
-use App\Models\User;
 use App\Models\Supervisor;
-use App\Models\Driver;
-use App\Models\Trip;
-use App\Models\Vehicle;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,9 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class SupervisorResource extends Resource
 {
@@ -28,7 +22,8 @@ class SupervisorResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', Auth::id());
+        // Tampilkan semua supervisor, tidak perlu dibatasi user_id
+        return parent::getEloquentQuery();
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -38,7 +33,7 @@ class SupervisorResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Auth::check() && Auth::user()->hasAnyRole('driver', 'supervisor');
+        return Auth::check() && Auth::user()->hasRole('supervisor');
     }
 
     public static function canCreate(): bool
@@ -61,11 +56,17 @@ class SupervisorResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                    ->label('User (Supervisor)')
+                    ->options(
+                        User::role('supervisor')->pluck('name', 'id')
+                    )
+                    ->searchable()
                     ->required(),
+
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+
                 Forms\Components\TextInput::make('phone')
                     ->required()
                     ->maxLength(20),
@@ -79,24 +80,26 @@ class SupervisorResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
                     ->label('User Name'),
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -109,9 +112,7 @@ class SupervisorResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

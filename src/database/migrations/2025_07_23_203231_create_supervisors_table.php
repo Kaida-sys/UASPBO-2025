@@ -15,6 +15,8 @@ return new class extends Migration
         Schema::create('supervisors', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
+            $table->string('username');
+            $table->string('name');
             $table->string('phone');
             $table->timestamps();
         });

@@ -15,6 +15,8 @@ class SupervisorSeeder extends Seeder
     public function run(): void
     {
         Supervisor::firstOrCreate([
+            'username' => 'AJ',
+            'name' => 'Alan Joe',
             'user_id' => 5,
             'phone' => '0987654321',
         ]);

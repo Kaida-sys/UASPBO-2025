@@ -3,11 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VehicleResource\Pages;
-use App\Filament\Resources\VehicleResource\RelationManagers;
-use App\Models\Driver;
-use App\Models\Supervisor;
 use App\Models\Vehicle;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,9 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class VehicleResource extends Resource
 {
@@ -27,17 +21,17 @@ class VehicleResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', Auth::id());
+        return parent::getEloquentQuery();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::check() && Auth::user()->hasRole('supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function canViewAny(): bool
     {
-        return Auth::check() && Auth::user()->hasAnyRole('driver', 'supervisor');
+        return Auth::check() && Auth::user()->hasAnyRole(['driver', 'supervisor']);
     }
 
     public static function canCreate(): bool
@@ -115,9 +109,7 @@ class VehicleResource extends Resource
                     ->dateTime()
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -130,9 +122,7 @@ class VehicleResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
